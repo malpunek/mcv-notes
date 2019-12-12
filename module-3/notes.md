@@ -38,7 +38,7 @@ We've assumed that $h$ is linear. We thus have a set of two parmas $\theta = \{\
 
 **Formally the goal of linear regression is to find $\theta$ that minimize $J(h_{\theta}(x), y)$ given some distance function $J$.**
 
-**Cost function** (aka. distance function) the function that measures how much the prediction differs from the ground truth. By far the most popular cost function is **Mean squared error - MSE** defined as $\frac{1}{2m}\sum_{i=0}^m (h_{\theta}(x) - y)^2$ where $m$ is the number of training samples
+**Cost function** (aka. distance function) the function that measures how much the prediction differs from the ground truth. By far the most popular cost function is **Mean squared error - MSE** defined as $J(\theta) = \frac{1}{2m}\sum_{i=0}^m (h_{\theta}(x) - y)^2$ where $m$ is the number of training samples
 
 We try to define our cost functions to be convex, because then it's easy to find a global minimum (which has to exist if the function is strictly convex).
 
@@ -115,14 +115,197 @@ To make our life easier with thresholding we use a sigmoid function. Sigmoid fun
   * $h: \reals \rightarrow [0,1]$
   * and $h$ is monotonic (for linear $f$)
 
-We can thus always pick $\frac12$ as a thresholding value. We may also interpret $h(x)$ as the probability that the input is labeled with the class $1$.
+We can thus always pick $\frac12$ as a thresholding value. 
+
+We may also interpret $h(x)$ as the probability that the $x$ is labeled with the class $1$.
 
 The **decision boundary** is a set of all points where the probabilities of x belonging to two different classes are equal.
 
-## Multiclass case
+# Non-linear decision boundaries
+
+In many cases there is no good linear solution (decision boundary is not a linear function).
+
+![Red points on edges, green in the center](assets/circleclass.png)
+
+In these cases we have to complicate the solution a bit. We want some kind of a shape for the decision boundary. The approach we use is similar to polynomial regression. We compute another discriminative features. How we do that?
+
+We can just come up with various functions and look whether we can separate the classes using thresholding on those values. For instance we can compute $x_3 = x_1^2 + x_2^2$ and then:
+
+![Graph with the x_3 feature](assets/newfeature.png)
+
+## Cost functions with sigmoid
+
+**MSE** doesn't perform well in logistic regression - it's not a simple convex function:
+
+![Graph of MSE for logistic regression](assets/mselogistic.png)
+
+> This strange outcome is due to the fact that in logistic regression we have the sigmoid function around, which is non-linear (i.e. not a line). [source](https://www.internalpointers.com/post/cost-function-logistic-regression)
+
+It may have some plateaus which extremely slows down gradient descent or even local minima that cause the algorithm to never reach the global minimum.
+
+And so we define a new cost function that plays a lot better with gradient descent in logistic regression: $J(\theta) = \frac{1}{m}\sum_{i=0}^m C(h_{\theta}(x_i),y_i)$ where C is:
+
+$$
+C(h_{\theta}(x),y) =
+\begin{cases}
+  -log(h_{\theta}(x)) & \text{if } y = 1 \\
+  -log(1-h_{\theta}(x)) & \text{else} \\
+\end{cases}
+$$
+
+\(Notice that cases are pain when implementing so we can define the same function as $C(h_{\theta}(x),y) = y*(\text{case 1})+ (1-y)*(\text{case 2})$ \)
+
+Ok, but why this function? Let's look at the graphs for two cases:
+
+![Graph of two cases](assets/costlogistic.png)
+
+It's clear that this function puts a hefty cost for being very sure and wrong at the same time - and that is a desired property in our case.
+
+# Multiclass case
+
+The easiest way to solve multiclass classification is to do *one vs rest* classification. In short lets split the problem to many problems of binary classification.
+
+Let's have labels $\{r,g,b\}$. Let's compute three different models $\forall_{c\in \{r,g,b\}}: c\text{ vs }(\{r,g,b\}\setminus\{c\}$). Then we can just pick the color whose model gave us the highest probability.
+
+One way to see it is that we draw three decision boundaries.
+
+![One vs rest lines](assets/manylines.png)
+
+## Neural networks FF
+
+It's a nice intuition of what fully connected layers do in classification neural network. The first layer computes many possible lines between data points and the following layers combine the results.
+
+# Introduction vol. 2
+
+Let's look differently on linear regression. Let's introduce $\phi: D_X -> D_{X'}$. $\phi$ is a feature extraction function, it takes a data sample $x$ and projects it to a potentially better feature space. For instance for some input $x=[x_1, x_2]$ we may have $\phi(x) = [1, x_1 * x_2^2, x_1^8]$ etc. Now our mapping function $h_\theta: D_X' \rightarrow D_Y$ and generic cost $J(\theta, \phi, (X, Y), C) = \frac{1}{m}\sum_{i=1}^m C(h_\theta(\phi(x_i)), y_i)$, where $(X,Y)$ is the training set and $C$ is cost function of a single output.
+
+
+## Probabilistics
+
+It's usefull to look at the data in a **generative** way. 
+The data (aka. training set) comes from some complex process and is slightly corrupted by noise. We usually assume that the noise is Gaussian. What ML is trying to do is to *model the process*.
+
+We say that with different training sets drawn from the same underlying process we have different **instaces** of the same problem.
+
+For the purpose of this chapter we think of the process as a black box, where we can put our input and get noisy output.
+
+![Instance one of some problem](assets/instance1.png)
+![Instance two of the same problem](assets/instance2.png)
+
+## Over(under)fitting
+We don't know how complex the process is. Underfitting happens when we try to model a complex process with a simple model.
+
+To make it easier to explain we will assume a 1D feature space. Let's define feature extraction function $\phi_i(x) = [x^j]_{j=0}^{i-1}$. And so $\phi_1(x) = [x^0]$, $\phi_3(x) = [x^0, x^1, x^2]$ etc.
+
+Now let's try to fit some complex model with features extracted by $\phi_0$.
+
+![Underfitting graph](assets/underfit.png)
+
+We can clearly see that this function doesn't provide a good solution. It's a so called *High bias - low variance* solution - the parameters for different instances are alomst the same - hence low variance. The solution is very biased towards some function thus high bias.
+
+Overfitting happens with to complex models. Let's try extracting features with $\phi_{30}$:
+
+![Overfitting graph](assets/overfit.png)
+
+The solution does extremely well on this particular dataset, but given another instance of the same problem it will perform worse than lower-complexity models. We say that this model doesn't **generalize** well.
+
+We call this *low bias - high variance* solution - the parameters for different instances are very different. The solution is very unstable.
+
+### The Bias/Variance trade-off
+
+$error = Bias(f;k)^2 + Var(f;k) + \sigma^2$
+
+where:
+ * $Bias$ is a measure of how much relevant data we missed in the model
+ * $Var$ is a measure of *sensivity to fluctuations* in data
+ * $\sigma^2$ is the unavoidable error due to noise in data
+
+![Bias/Variance trade-off graph](assets/biasvariance.png)
+
+## Regularization
+
+In the regression above we where able to choose to complexity of the model. Generally in ML this doesn't hold.
+
+To tackle the problem of over/under fitting we are going to take a very complex model and control it's *regularity* - the magnitude of weights.
+
+It's based on an observation that in as model is becoming more and more overfitted the magnitude of $\theta$ is getting bigger.
+
+![Magnitude of coefficients](assets/coeffmagnitude.png)
+
+We perform regularization by penalising $\theta^T\theta$ the so-called **regularization term**. Our cost function becomes $J_{reg}(\theta;X;Y;\phi) = J(\theta;X;Y;\phi) + \lambda\theta^T\theta$. The $\lambda$ is called the **regularization coefficient** and it controls the trade-off between fitting the data better and having a smoother function.
+
+Regularization coefficient is a hyper-parameter: we basically try different values and see what works best.
+
+Regularizing with $\theta^T\theta$ (also called **ridge**) is powerfull but it has it's disadvantages - coefficients usually never reach $0$. That's because when we perform gradient descent over $J_{reg}$ as $\theta$ comes closer to $0$ it's derivative is less steep. This is usually not a big problem but sometimes we want $\theta$ to be sparse.
+
+Lasso is another regularization term $\sum_{i=o}^n |\theta_i|$. It has the advantage it's discarding small $\theta_i$ completely. Learning with lasso is much more difficult to implement because it has no derivative. 
+
+Recently we discovered that:
+
+<!-- TODO provide some more info and explanation -->
+![Double descent graph](assets/doubledescent.png)
+
+# Notes in progress - warning
+
+Beyond this point I haven't yet restructured the notes, they may contain errors and they are just a set of loose sentences written during the lecture.
+
+**HELP WANTED**
+
+I want to focus on notes for M4 for now so if somebody could help me structure and rewrite the notes below - it would be great. Feel free to msg me, open an issue or a pull request.
+
+## Parameter estimation - the Bayesian View
+
+<!-- TODO transform random notes to readable text-->
+
+The whole thing till now was to try to estimate values for parameters.
+
+Recap: the bayes rule states $p(Y|X) = \frac{p(X|Y)p(Y)}{p(X)}$, in other words *posterior = likelihood * prior / evidence*
+
+Let's take a 1D dataset $(X,Y)$ of samples drawn from the same distribution. The samples are independent and identically distributed.
+
+Suppose that the underlying distirbution is a Gaussian. We want to estimate the parameters of the Gaussian $(\mu, \sigma^2)$ from the samples we've drawn.
+
+The thing that we are actually trying to do is to find $(\mu, \sigma^2)$ such that we have a highest probability of obtaining the our dataset.
+
+$p(x|\mu,\sigma^2) = \prod_{n=1}^N N(x_n|\mu,\sigma)$
+
+In order to maximize this product we take a log of it. (Maximum Log-likelihood). Log is monotonic, and now we maximize over a sum which is easier:
+
+> One way to view parameter fitting is selecting such a distribution that our dataset of samples is most probable
+
+## Curve fitting
+
+<!-- TODO -->
+
+MSE is a consequence of Gaussian noise in the problem we r trying to model.
+
+Logisitic cost works because of Bernoulli noise.
+
+## MAP
+
+If we have some *prior* of what our weights should be we can leverage that via the Bayesian approach.
+
+Let's assume that we have intuition that the parameters should be around 0
+
+$p(w|\alpha) = N(w|0,\alpha^{-1}I)= (\frac{\alpha}{2\pi})^{(M+1)/2}exp(-\alpha w^t w / 2)$
+
+This leads us to the cost function that is using regularization.
+
+## The last step
+
+Given a training set $(x,y)$, we have probability of having weitgs $p(w|x,y)$. 
+
+<!-- TODO slide bayesian curve fitting with integrating -->
+
+This leads to the high-bias - low-variance balance.
+
+
 
 Softmax is weight-combined sigmoid for many outputs.
 
 
+# References:
 
+<!-- TODO provide all the references from lectures and the source of images -->
 
+https://www.internalpointers.com/post/cost-function-logistic-regression
