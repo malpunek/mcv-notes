@@ -247,7 +247,7 @@ Recently we discovered that:
 
 # Notes in progress - warning
 
-Beyond this point I haven't yet restructured the notes, they may contain errors and they are just a set of loose sentences written during the lecture.
+> Beyond this point I haven't yet restructured the notes, they may contain errors and they are just a set of loose sentences written during the lecture.
 
 **HELP WANTED**
 
