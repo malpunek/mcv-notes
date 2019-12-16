@@ -209,50 +209,107 @@ $C^* \equiv C^{*'}$ if $\exist_{k \neq 0}: C^{*'} = kC^*$
 - camera calibration
 - auto calibration
 
+## Circular points
+
+$I,J = (1, {+\atop-} i,0)$ circular points - these points:
+ - belong to complexification of all real circles
+ - are at infinity
+ - belong to projective complex space
+
 
 # Planar Transformations
 
-Types:
-* translation - shifting
-* euclidean - rotating
-* similarity - scale
-* affine - stretching
-* projective - projection on some other plane
+Types (each builds upon the previous and):
+* translation = shifting
+* euclidean = translation + rotating
+* similarity = euclidean + scale
+* affine = similarity + stretching
+* projective = affine + projection on some other plane
 
 Given a transformed image, we cannot recover more than similarity - we would need to know what were the original measurments. In similarity distance ratio holds so it's still a lot.
 
-# Notes in progress - warning
+## Representation
 
-> Beyond this point I haven't yet restructured the notes, they may contain errors and they are just a set of loose sentences written during the lecture.
+We will represent transformations with the **tansformation matrix** $H \in R^{3,3}$. Given $H$ and a point $x \in P^2$ we can compute the transformed $x' = Hx$.
 
+## Translation
 
+The translation by $\vec{t} = (x,y)$ is represented by:
 
+$$\begin{pmatrix}
+I & \vec{t} \\
+\vec{0}^T & 1
+\end{pmatrix} = \begin{pmatrix}
+1 & 0 & x \\
+0 & 1 & y \\
+0 & 0 & 1 
+\end{pmatrix}$$
+
+From now on we will stick with the smaller representation.
+
+The **degree of freedom** for translation is $2$: one for each element of $\vec{t}$.
+
+## Euclidean
+
+The rotation by $\theta$ degrees in $\reals^2$ can be represented by $R = \begin{bmatrix}\cos\theta & -\sin\theta \\ \sin\theta & \cos\theta \end{bmatrix}$. The euclidean transform (rotating by $\theta$ and translating by $\vec{t}$) in $P^2$ can be represented as:
+
+$$H = \begin{pmatrix}
+R         & \vec{t} \\
+\vec{0}^T & 1
+\end{pmatrix}$$
+
+Euclideans degree of freedom is $3$: $2$ for translation and one for rotation.
 
 ## Similarity
 
-Let $x,x'$ be homogeneous coordinates - adding third coord in a 2D space, and now we can represent points at infinity $(a,b,0)$.
+Similarity adds the scale factor $s$ to euclidean. It's represented as:
 
-$x' = H_ex = \begin{bmatrix} sR & \vec{t} \\ \vec{0}^T & 1\end{bmatrix}x$
 
-$I,J = (1, +/-i,0)$ circular points - these points:
- - belong to all the circles
- - are at infinity
+$$H = \begin{pmatrix}
+sR        & \vec{t} \\
+\vec{0}^T & 1
+\end{pmatrix}$$
+
+It's degree of freedom is $4$: $3$ for euclidean and $1$ for scale factor.
 
 ## Affine
 
-A is non-singular $2 \times 2$ matrix, $\vec{t}$ is a translation vector.
+Affinity scaling with a different factor in two dimensions.
+Let $A$ be a non-singular $2 \times 2$ matrix (and let $\vec{t}$ be a translation vector). Then
 
-If $det(A) \gt 0$ the transform is orientation preserving
+$$H = \begin{pmatrix}
+A         & \vec{t} \\
+\vec{0}^T & 1
+\end{pmatrix}$$
 
-6 degrees of freedom
+If $det(A) \gt 0$ the transform $H$ is orientation preserving (not reflected, and therefore the vertices of a shape $ABCD..$ will preserve order).
 
-It preserve parallel lines, ratios of parallel lenghts, ratio of areas, line at infinity $l_{\infty}$ (preserves =  keeps being at infinity).
+Matrix $A$ can be decomposed using SVD:
+
+$A = UDV^T = UV^T(VDV^T) = R_\gamma R_{-\theta}DR_\theta$
+
+Affinity has $6$ degrees of freedom: $2$ for each of:
+- $\gamma, \theta$ (rotations)
+- $D$ (scaling factors)
+- $\vec{t}$ (translation)
+
+It preserves parallel lines, ratios of parallel lenghts, ratio of areas, line at infinity $l_{\infty}$ (preserves =  keeps being at infinity).
 
 ## Projective
 
-$H_p$ is called a 2D homography, it has to be non-singular.
+Affine transform with projecting on some other plane.
 
-Has 8 degress of freedom (we discount the scale factor because). We just divide the whole matrix by ($h_{3,3}$) and it becomes one. And dividing by a scalar doesn't change the transformation. So we can always fix one element
+$$H_p = \begin{bmatrix}
+h_{1,1} & h_{1,2} & h_{1,3} \\
+h_{2,1} & h_{2,2} & h_{2,3} \\
+h_{3,1} & h_{3,2} & h_{3,3}
+\end{bmatrix}$$
+
+Projective transformation $H_p$ is called a 2D **homography**, it has to be non-singular.
+
+It has $8$ degress of freedom: we discount the scale factor because we can just divide the whole matrix by ($h_{3,3}$) and it becomes $1$. And *dividing by a scalar doesn't change the transformation*. So we can always fix one element.
+
+<!-- TODO Is that ("dividing by a scalar doesn't change the transformation") sentence really true? -->
 
 Invariants:
   * concurrency
@@ -260,15 +317,19 @@ Invariants:
   * order of contact
   * cross ratio
 
-## Homographies
+## Overall
+
+[![The summary of projective transformations](assets/planartranssummary.png)](http://cvrs.whu.edu.cn/downloads/ebooks/Multiple%20View%20Geometry%20in%20Computer%20Vision%20(Second%20Edition).pdf)
+
+# Homographies
 
 Similarity transformations are also affine and affine transformations are projective transfromations. Projective transformations are also called **homographies**.
 
 Projective transformations of:
-  * points - $x' = Hx$
+  * points  $x' = Hx$
   * line $l' = H^{-T}l$
-  * conics
-  * dual conic
+  * conics $C' = H^{-T}CH^{-1}$
+  * dual conic $C^{*'} = H C^*H^T$
 
 A homography relates two images:
   * of the same plane in the 3D scene
@@ -278,7 +339,9 @@ A homography relates two images:
 
 For instance shade of a house is a projective transformation of a house with light source as a center.
 
-Aplications:
+<!-- TODO maybe we've already have enough of applications and we can delete that -->
+
+Aplications (once again):
   * Panorama (Image mosaic)
   * Logo detection - canonical view vs some projective transform
   * Logo insertion - find the homography and then apply it to another logo
@@ -291,6 +354,12 @@ Aplications:
   * Optical flow
   * Video inpainting
   * Camera motion compensation
+
+
+# Notes in progress - warning
+
+> Beyond this point I haven't yet restructured the notes, they may contain errors and they are just a set of loose sentences written during the lecture.
+
 
 # Affine and metric rectification
 
@@ -416,8 +485,6 @@ Basic idea:
     * You are tired of computing. Use voting to determine the outcome
 
     
-  
-
 
 
 
