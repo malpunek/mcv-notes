@@ -31,6 +31,11 @@ We (humaity) have a crazy amount of cameras and the images are all connected in 
 
 The project makes a **sparse reconstruction** - it outputs a set of points. But we can also perform a **dense reconstruction** that uses meshes not points.
 
+
+#### Deep learning
+
+Neural Radiance Fields aka. [NeRF](https://nerf-w.github.io)
+
 ### Others
 
 * Motion capture:
@@ -598,5 +603,3 @@ Camera CCD
 ## Images
 
 module-4/assets/visualray.png - I found it in a presentation that only mentioned it's from S. Seitz.
-
-
