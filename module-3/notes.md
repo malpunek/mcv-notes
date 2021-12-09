@@ -304,6 +304,167 @@ This leads to the high-bias - low-variance balance.
 Softmax is weight-combined sigmoid for many outputs.
 
 
+# Experimental setup
+
+This lecture will be as practical as possible. It's about providing statistical evidence that our models work.
+
+We want to **assess the performance** of a given classifier - see how good is it with previously unseen data. How good is our classifier in **generalisation**.
+
+
+The classification problem:
+
+We have 2 distributions $A, B$ given by their probability density functions. The task to determine the underlying distribution given a sample is called classification
+
+<!-- TODO These are probably wrong -->
+Assumptions:
+1) we have a continouus model but a natural number of samples
+2) the samples model an underlying distribution
+
+
+To adapt a classifier to specific problem is to **train** it. 
+
+Bayesian error is a minimal error that we are gonna get. We have an asymptotical error in our problem - whatever we are gonna do we won't do better than bayesian error. Bayesian error doesn't change for different classifiers it does for different feature spaces.
+
+Unbalanced problem is when we have significantly more of class B than of A.
+
+In order to overcome the bayesian errors we move to different features space. Notice that with a fixed number of samples and rising number of features we eventually arrive at huge problems.
+
+Always get a lot of data, otherwise:
+  - data may not model the underlying pdf well
+
+We create a model with underlying pdf-s.
+
+is to determine a source distribution 
+
+## Dividing datasets
+
+Training set - the samples that we use to train the models.
+
+**resubstitution error** aka. training error. It's usfull because if the classifiers is bad on seen data then it won't be good on the unseen data. If we fail on many classifiers it means we have a feature space that is not discriminative.
+
+There are two problems with assesing with training error:
+ - over fitting
+ - <!--TODO from slides-->
+
+ The solution is to divide to test and training set. The classifier is prone to overfitting but the assesment method is not - and that is extremely usefull.
+
+
+Validation is used to pick (hyper)parmas. Test set is used to asses performance
+
+#### Cross validation && leave-one-out
+
+<!-- TODO from slides -->
+
+### ROC curve
+
+<!-- TODO from slides, change specifity -->
+
+how good we are in:
+Sensitivity = detecting all
+Specifity = not detecting false samples
+Precision = not detecting flase samples
+
+
+Roc curves has very nice mathematical properties. Shifiting the operetional point of our classifier is the same as balancing it.
+
+The area under the ROC curve is a metric of a classifier
+
+Precision-recall aren't so nice mathematically, but are also usefull for picking an operational point.
+
+
+
+
+
+## Hypothesis testing
+
+How statistically relevant is our result. It's looking for statistical evidence.
+
+If we have an experiment and some statistical model we want to test how the model is relevant in the real world.
+
+<!-- TODO fill from slides and explain (from youtube) -->
+The test of hypothesis consists of:
+  - Null hypothesis A condition that we want to reject (otherwise nothing changes)
+  - alternative hypothesis: the condition if the null 
+
+
+# Support Vector Machines
+
+## As a linear classifier
+
+We already know examples of binary classifiers in a multidimensional space. We are going to present mathematical notation for these
+
+$w = (w_0...w_k)$ design decision - **hyperplane** in multidimensional case.
+
+We will be working on 2D to have the visual intuition what is happening.
+In 2D the design decision is a line with equation $w^T\phi(x) = 0$.
+
+Our classifier is a condition:
+
+There's no unique solution (hyperplane) dividing the feature space.
+
+SVM is a discriminative linear classifier. It's a way of finding hyperplane. It's based on maximal margin from the support vectors.
+
+Only a few samples from the traingin set are used to compute the hyperplane
+
+We are maximizing the margin between the two classes.
+
+The support vector approach reduces the overfitting. Changes in the support vector samples makes radical changes in the solution
+
+The solution is however invariant to changes in other samples.
+
+SVM-s are thus:
+- robust against outliers
+- fast - because it computes solution from small number of samples
+- linear - Again fast
+
+The approach is only applicable in lineary seperable classes. But life is more complicated - we rarely have separable classes and linear problems.
+
+
+**soft margin** - The maximal margin condition is relaxed. We are going to use **slack variables** - they control the tolerance to errors.
+
+**kernel trick** - The features space is mapped into a higher dimensional dpace in which the dataset is linearly separable. Recall mapping function $\phi(x)$. (Actually we dont need it we just need to define the scalar product *kernel*)
+
+We not always can find the right $\phi$ and then we fail :/
+
+<!-- TODO fit the headings -->
+
+### Maximal margin solution
+## TOlerance to errors
+## Nen linearly-separable data sets
+
+## Mathematical development
+
+We have three equations for hyperplanes $h, h^+, h^-$
+
+Classification condition $y_i(w^tx_i+b) \geq 1$
+
+Distance between $h^+ \text{ and } h^-$ is how we measure the margin.
+
+Notice that the distance is dependet on the norm of $\vec{w}$
+
+We will want to minimise $\frac{1}{2} ||w||^2$ subject to: the classification condition.
+
+We've just took the classification problem and brought it down to a well known quadratic optimization problem which we know how to solve.
+
+## Maths
+
+When we use the lagrangian. we want to minimize it. They are minimal where the derivatives are equal zero. And this implies that our $weights$ are just a linear combination of a subset of samples. We arrive at SVM Dual problem which gives us the solution of svm primal.
+
+We define support vectors as those that have the coresponding lagrangian multipliers $\gt 0$.
+
+For the case of non linearly seperable classes we use the kernel trick. The actual trick stems from the fact that svm dual depends on a dot product of the samples. So in fact we can just supply our own **kernel function** $K$ that computes a higher dimension dot product.
+
+We have a whole catalogue of kernel functions:
+
+<!-- TODO fill it -->
+
+Some of them are parametric - we can fix the parameters via cross-validation.
+
+## Slack variables
+
+we are introducint $\varepsilon_i \geq 0$. The dual has another condition that is bounded with the regularization factor. We have to tune it for instance via cross validation.
+
+
 # References:
 
 <!-- TODO provide all the references from lectures and the source of images -->
