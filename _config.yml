@@ -36,7 +36,9 @@ baseurl: "" # place folder name if the site is served in a subfolder
 markdown: kramdown
 
 # Build settings
-theme: jekyll-theme-minimal
+# theme: jekyll-theme-minimal
+remote-theme: pmarsceill/just-the-docs
+
 plugins:
   - jekyll-feed
   - jekyll-katex
