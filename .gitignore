@@ -10,5 +10,10 @@ module-4/*
 !module-4/notes.md
 !module-4/notes.html
 
-docs/vendor
-docs/.bundle
+
+_site
+.sass-cache
+.jekyll-cache
+.jekyll-metadata
+vendor
+.bundle
