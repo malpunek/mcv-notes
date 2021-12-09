@@ -10,5 +10,5 @@ module-4/*
 !module-4/notes.md
 !module-4/notes.html
 
-page/vendor
-page/.bundle
+docs/vendor
+docs/.bundle
