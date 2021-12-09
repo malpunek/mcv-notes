@@ -33,10 +33,14 @@ domain: malpunek.github.io       # if you want to force HTTPS, specify the domai
 url: https://malpunek.github.io  # the base hostname and protocol for your site, e.g. http://example.com
 baseurl: /docs      # place folder name if the site is served in a subfolder
 
+markdown: kramdown
+
 # Build settings
 theme: minima
 plugins:
   - jekyll-feed
+  - jekyll-katex
+
 
 # Exclude from processing.
 # The following items will not be processed, by default.
