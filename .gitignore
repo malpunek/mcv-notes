@@ -9,3 +9,6 @@ module-4/*
 !module-4/assets
 !module-4/notes.md
 !module-4/notes.html
+
+page/vendor
+page/.bundle
