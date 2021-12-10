@@ -30,7 +30,10 @@ baseurl: /mcv-notes # place folder name if the site is served in a subfolder
 url: https://malpunek.github.io  # the base hostname and protocol for your site, e.g. http://example.com
 domain: malpunek.github.io       # if you want to force HTTPS, specify the domain without the http at the start, e.g. example.com
 
-# markdown: kramdown
+markdown: kramdown
+
+kramdown:
+    math_engine: katex
 
 # Build settings
 # theme: jekyll-theme-minimal
@@ -38,7 +41,6 @@ remote-theme: pmarsceill/just-the-docs
 
 plugins:
   - jekyll-feed
-  - jekyll-katex
 
 
 # Exclude from processing.
